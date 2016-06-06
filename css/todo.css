@@ -1,0 +1,107 @@
+
+.main{
+	width: 500px;
+	margin: 0 auto;
+	text-align: center;
+	border: 1px solid #ccc;
+	border-radius: 0px 0px 10px 10px;
+	box-shadow: 1px 1px 10px #ccc;
+}
+h1{
+	margin: 10px;
+	font-size:  36px;
+	font-weight: bold;	
+}
+#in_list{
+	width: 300px;
+	height: 30px;
+	padding: 3px 20px;
+	font-size: 20px;
+	margin-bottom: 20px;
+}
+li{
+	position: relative;
+	width: 300px;
+	height: 30px;
+	margin: 20px auto;
+	padding: 7px 21px;
+	text-align: left;
+	font-size: 20px;
+	font-weight: bold;
+	border-bottom: 1px solid #ccc;
+}
+
+.view{
+	width: 100%;
+	height: 100%;
+	position:absolute;
+	top:0;
+	left:0;
+}
+
+.btn{
+	width:24px;
+	height:24px;
+	float: right;
+	margin-right: 15px;
+	cursor: pointer;
+	text-align: center;
+}
+
+.btn:hover{
+	border-radius: 50%;
+	background-image: url("../img/cancel-button.png");
+}
+
+.view > label{
+	margin-left: 10px;
+}
+.footer{
+	width: 100%;
+	height: 50px;
+	background: #f4fce8;
+	border-top: 1px solid #ccc;
+	border-radius: 0px 0px 10px 10px;
+}
+.count{
+	float: left;
+	margin-left: 10px;
+	margin-top: 15px;
+}
+
+.check_count{
+	float: left;
+	margin-left: 20px;
+	margin-top: 15px;
+}
+
+.clear_btn{
+	background: rgba(0,0,0,.1);
+	color:white;
+	cursor: pointer;
+	float: right;
+	margin-top: 15px;
+	margin-right: 10px;
+	border-radius: 10px;
+	border:1px solid black;
+	padding:3px;
+}
+
+.clear_btn:hover{
+	background: rgba(0,0,0,.5);
+}
+
+.edit{
+	width: 100%;
+	height: 100%;
+	position:absolute;
+	top:0;
+	left:0;
+}
+
+.edit > input{
+	width: 300px;
+	height: 30px;
+	padding: 3px 20px;
+	font-size: 20px;
+}
