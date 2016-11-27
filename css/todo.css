@@ -1,6 +1,6 @@
 
 .main{
-	width: 500px;
+	width: 50%;
 	margin: 0 auto;
 	/*text-align: center;*/
 	border: 1px solid #ccc;
@@ -16,7 +16,7 @@
 }
 
 .container .input-text{
-	width: 300px;
+	width: 70%;
 	max-height: 200px;
 	min-height: 30px;
 	padding: 0px 10px;
@@ -93,7 +93,7 @@
 }
 
 .list-item .check-text{
-	width: 350px;
+	width: 80%;
 	min-height: 24px;
 	float: left;
 	display: inline-block;
