@@ -7,20 +7,34 @@
 	<link rel="stylesheet" href="css/reset.css">
 	<link rel="stylesheet" href="css/todo.css">
 	<script src="https://ajax.googleapis.com/ajax/libs/jquery/1.12.2/jquery.min.js"></script>
+	<script src="https://www.gstatic.com/firebasejs/3.6.0/firebase.js"></script>
 	<script src="js/todolist.js"></script>
+	
 </head>
 <body>
 	<div class="main">
-		<h1>ToDo List</h1>
-		<input type="text" name="list" id="in_list" placeholder="What needs to be done?" onkeypress="kpress(event)">
-		<ul id="list">				
-		</ul>
-		<div class="footer">
-			<p class="count">0 left</p>
-			<p class="check_count">checked: 0</p>
-			<p class="un_check_count"></p>
-			<a class="clear_btn">Clear completed</a>
+		<div class="container">
+			<div class="title">To Do List</div>
+			<!-- <input type="text" class="input-text" placeholder="What needs to be done?"> -->
+			<div class="input-text" contenteditable="true"></div>
 		</div>
+		<div class="list-content no-list">
+			<!-- <div class="list-item">
+				<div class="box-content">
+					<input id="box" type="checkbox">
+	                <label for="box" class="check-btn"></label>
+	                <div class="check-text" contenteditable="true">Lorem ipsum dolor sit amet, consectetur adipisicing elit. Et aliquam consequatur</div>
+	                <div class='cancel-btn'></div>
+				</div>
+                <div class="check-time">2016/11/25 15:17:15</div>
+            </div> -->
+		</div>
+		<div class="footer">
+			<div class="list-count">0 list</div>
+			<div class="check-count">checked: 0</div>
+			<div class="clear-btn">Clear completed</div>
+		</div>
+
 	</div>
 </body>
 </html>

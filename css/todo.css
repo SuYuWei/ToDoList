@@ -2,96 +2,174 @@
 .main{
 	width: 500px;
 	margin: 0 auto;
-	text-align: center;
+	/*text-align: center;*/
 	border: 1px solid #ccc;
 	border-radius: 0px 0px 10px 10px;
 	box-shadow: 1px 1px 10px #ccc;
 }
-h1{
-	margin: 10px;
-	font-size:  36px;
+
+.title{
+	font-size: 36px;
 	font-weight: bold;	
+	text-align: center;
+	margin: 15px 0px;
 }
-#in_list{
+
+.container .input-text{
 	width: 300px;
-	height: 30px;
-	padding: 3px 20px;
-	font-size: 20px;
-	margin-bottom: 20px;
-}
-li{
+	max-height: 200px;
+	min-height: 30px;
+	padding: 0px 10px;
+	padding-top: 10px;
+	margin: 10px auto;
 	position: relative;
-	width: 300px;
-	height: 30px;
-	margin: 20px auto;
-	padding: 7px 21px;
-	text-align: left;
-	font-size: 20px;
-	font-weight: bold;
-	border-bottom: 1px solid #ccc;
+	font-size: 18px;
+	white-space: pre-wrap;
+	word-wrap: break-word;
+	border: 1px solid black;
+	border-radius: 5px;
+	outline: 0px;
+  	cursor: text;
+  	overflow-x: hidden;
+  	overflow-y: auto;
+  	line-height: 25px;
 }
 
-.view{
+.container .input-text[contentEditable=true]:empty:before {
+  content: "What needs to be done?";
+  color: #bbb;
+}
+
+.list-content{
+    height: 350px;
+    padding: 7px 20px;
+    overflow-y: scroll;
+}
+
+.list-item{
+	padding-top: 10px;
+}
+
+.list-item:hover{
+	background: rgb(238, 238, 238);
+}
+
+.list-item .box-content{
 	width: 100%;
-	height: 100%;
-	position:absolute;
-	top:0;
-	left:0;
+	display: inline-block;
+	margin-bottom: 10px;
 }
 
-.btn{
+.list-item input[type=checkbox] {
+    display: none;
+}
+
+.list-item .check-btn{
+	float: left;
+	display: inline-block;
+	cursor: pointer;
+	position: relative;
+}
+
+.list-item .check-btn:before {
+	content: "";
+	display: inline-block;
+	width: 18px;
+	height: 18px;
+	position: absolute;
+	left: 15px;
+	bottom: -37px;
+	background: white;
+	border: 2px solid #ccc;
+	border-radius: 50%;
+}
+
+.list-item input[type=checkbox]:checked + .check-btn:before {
+    content: "\2022";
+    color: #ccc;
+    font-size: 25px;
+    text-align: center;
+    line-height: 22px;
+}
+
+.list-item .check-text{
+	width: 350px;
+	min-height: 24px;
+	float: left;
+	display: inline-block;
+	margin-top: 15px;
+	margin-left: 50px;
+	padding: 3px 5px;
+	cursor: text;
+	white-space: pre-wrap;
+	word-wrap: break-word;
+	line-height: 25px;
+}
+
+.list-item .cancel-btn{
 	width:24px;
 	height:24px;
 	float: right;
-	margin-right: 15px;
+	margin-right: 10px;
+	margin-top: 15px;
 	cursor: pointer;
-	text-align: center;
+	background-image: url("../img/cancel.png");
 }
 
-.btn:hover{
-	border-radius: 50%;
-	background-image: url("../img/cancel-button.png");
+.list-item .cancel-btn:hover{
+	background-image: url("../img/cancel-hover.png");
 }
-
-.view > label{
-	margin-left: 10px;
+.list-item .check-time{
+	padding-bottom: 5px;
+    text-align: right;
+    font-size: 8px;
+    border-bottom: 1px solid black;
+    width: 100%;
+}
+.no-list{
+	background-image: url("../img/list.png");
+	background-repeat: no-repeat;
+    background-position: center; 
 }
 .footer{
 	width: 100%;
 	height: 50px;
-	background: #f4fce8;
+	background: #ccc;
 	border-top: 1px solid #ccc;
 	border-radius: 0px 0px 10px 10px;
 }
-.count{
-	float: left;
-	margin-left: 10px;
-	margin-top: 15px;
-}
-
-.check_count{
+.footer .list-count{
 	float: left;
 	margin-left: 20px;
 	margin-top: 15px;
 }
 
-.clear_btn{
-	background: rgba(0,0,0,.1);
-	color:white;
+.footer .check-count{
+	float: left;
+	margin-left: 20px;
+	margin-top: 15px;
+}
+
+.footer .clear-btn{
+	display: none;
+	/*background: rgba(0,0,0,.1);*/
+	color: black;
 	cursor: pointer;
 	float: right;
-	margin-top: 15px;
+	margin-top: 12px;
 	margin-right: 10px;
 	border-radius: 10px;
 	border:1px solid black;
 	padding:3px;
 }
 
-.clear_btn:hover{
+.footer .clear-btn:hover{
+	color: white;
 	background: rgba(0,0,0,.5);
 }
 
 .edit{
+	display: none;
 	width: 100%;
 	height: 100%;
 	position:absolute;
