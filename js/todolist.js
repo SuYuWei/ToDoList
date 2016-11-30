@@ -2,44 +2,145 @@ $(document).ready(function(){
 
 	var listSum = 0,
 		checkSum = 0,
-		listContent = $(".list-content"),
-		checkedArr = [],
-		firebaseConfig = {
-			apiKey: "AIzaSyD7xsV-3ddqrc7RMZ9ItX2K4s_iPB5jDfM",
-			authDomain: "todolist-b356c.firebaseapp.com",
-			databaseURL: "https://todolist-b356c.firebaseio.com",
-			storageBucket: "todolist-b356c.appspot.com",
-			messagingSenderId: "930760113299"
-		},
-		uid = "SuYuWei";
+		main = $("#main"),
+		listContent = $(".listContent"),
+		historyContent = $(".historyContent"),
+		loginContent = $("#loginContent"),
+		checkedArr = [];
+
+	var	firebaseConfig = {
+		apiKey: "AIzaSyD7xsV-3ddqrc7RMZ9ItX2K4s_iPB5jDfM",
+		authDomain: "todolist-b356c.firebaseapp.com",
+		databaseURL: "https://todolist-b356c.firebaseio.com",
+		storageBucket: "todolist-b356c.appspot.com",
+		messagingSenderId: "930760113299"
+	};
 
 	firebase.initializeApp(firebaseConfig);
-	
-	var database = firebase.database(),
-		commentsRef = database.ref('users/' + uid + '/');
 
-	// commentsRef.on('value',function(data){
-	// });
+	var auth = firebase.auth(),
+		database = firebase.database(),	//初始化DB
+		commentsRef = database.ref(),
+		storage = firebase.storage(),
+		storageRef = storage.ref();
 
-	commentsRef.orderByChild("time").on('child_added',function(data){
-		var addList = data.val();
-		if(!addList.status){
-			listContentMake(data.key, addList.desc, addList.time);
-			listSum++;
+	auth.onAuthStateChanged(function(user) {
+		if(user) {
+			loginUI();
+			var userName = user.providerData[0].displayName;
+			var photoURL = user.providerData[0].photoURL || "img/user.png";
+			$(".userName").text(userName);
+			$(".userAvatar").attr("src",photoURL);
+			loadlists(user.uid);
+		}else {
+			logoutUI();
 		}
+	});
+
+	main.on("click",".login",function(){
+		loginContent.show();
+	});
+	main.on("click",".logout",function(){
+		logoutUI();
+		auth.signOut();
+	});
+	$(".close").on("click",function(){
+		loginContent.hide();
+	});
+
+	$(".loginBtn").click(function(){
+		var email = $("input[name=\"email\"]").val();
+		var password = $("input[name=\"psw\"]").val();
+		auth.signInWithEmailAndPassword(email,password).catch(function(e){
+			alert(e.message);
+		});
+	});
+
+	$(".googleBtn").click(function(){
+		var provider = new firebase.auth.GoogleAuthProvider();
+		auth.signInWithPopup(provider);
+	});
+
+	$(".facebookBtn").click(function(){
+		var provider = new firebase.auth.FacebookAuthProvider();
+		auth.signInWithPopup(provider);
+	});
+
+	function logoutUI() {
+		main.find(".userContent").hide();
+		main.find(".logBtn").addClass("login").text("login");
+		listContent.find(".inputText").hide();
+		listContent.find(".list-item").remove();
+		historyContent.find(".history-item").remove();
+		$(".noListContent").show();
+		listSum = 0;
+		checkSum = 0;
 		count();
+	}
+
+	function loginUI() {
+		main.find(".userContent").show();
+		main.find(".logBtn").addClass("logout").removeClass("login").text("logout");
+		listContent.find(".inputText").show();
+		loginContent.hide();
+		$(".noListContent").hide();
+	}
+
+	function loadlists(uid){
+		commentsRef = database.ref('users/' + uid + '/lists/');
+		commentsRef.off();
+
+		// commentsRef.on('value',function(data){
+		// });
+
+		commentsRef.on('child_added',function(data){
+			var addList = data.val();
+			if(addList.complete){
+				historyItemMake(data.key, addList.desc, addList.time);
+			}else{
+				listItemMake(data.key, addList.desc, addList.time);
+				listSum++;
+			}
+			count();
+		});
+
+		commentsRef.on('child_changed',function(data){
+			var updateList = data.val();
+			$(".list-item[data-lid=\""+ data.key +"\"]").find(".check-text").html(updateList.desc);
+			if(updateList.complete){
+				$(".list-item[data-lid=\""+ data.key +"\"]").remove();
+				historyItemMake(data.key, updateList.desc, updateList.time);
+			}
+		});
+
+		commentsRef.on('child_removed',function(data){
+			$(".list-item[data-lid=\""+ data.key +"\"]").remove();
+		});
+
+		// var myConnectionsRef = firebase.database().ref('users/'+ uid +'/connections');
+		// var lastOnlineRef = firebase.database().ref('users/'+ uid +'/lastOnline');
+
+		// database.ref(".info/connected").on("value",function(connect){
+		// 	if(connect.val()){
+		// 		// ...連線
+		// 		var con = myConnectionsRef.push(true);
+		// 		con.onDisconnect().remove();
+		// 		lastOnlineRef.onDisconnect().set(firebase.database.ServerValue.TIMESTAMP);
+		// 	}else{
+		// 		// ...離線
+		// 	}
+		// });
+	}
+
+	$(".tabItem").click(function(){
+		var tabId = $(this).data("tab");
+		$(".tabItem").removeClass('active');
+		$(this).addClass('active');
+		$(".tab-content").hide();
+		$("."+tabId).show();
 	});
 
-	commentsRef.on('child_changed',function(data){
-		var updateList = data.val();
-		$(".list-item[data-lid=\""+ data.key +"\"]").find(".check-text").html(updateList.desc);
-	});
-
-	commentsRef.on('child_removed',function(data){
-		$(".list-item[data-lid=\""+ data.key +"\"]").remove();
-	});
-
-	$(".input-text").on("keypress blur",function(e) {
+	listContent.find(".inputText").on("keypress blur",function(e) {
 		var desc = $(this).html();
 		var time = new Date().getTime();
 		if(e.keyCode == 13 && !e.shiftKey){
@@ -92,12 +193,7 @@ $(document).ready(function(){
         	checkSum--;
             
         }
-		count();
-        if(checkSum > 0){
-        	$(".clear-btn").show();
-        }else{
-        	$(".clear-btn").hide();
-        }
+        count();
 	});
 
 	//刪除list
@@ -111,20 +207,20 @@ $(document).ready(function(){
 		count();
 	});
 
-	//刪除選中list
-	$(".clear-btn").on("click",function(){
-		$("input[type=\"checkbox\"]:checked").parent().parent().remove();
+	//完成選中list送出
+	$(".clearBtn").on("click",function(){
 		$.each(checkedArr, function(index, val) {
-			updateListData(val,{status: true});
+			updateListData(val,{complete: true});
 		});
+		checkedArr = [];
 		listSum = listSum - checkSum;
 		checkSum = 0;
 		count();
 		$(this).hide();
 	});
 
-	function listContentMake(listId, desc, time){
-		var listHtml = "<div class=\"list-item\" data-lid=\""+ listId +"\">"+
+	function listItemMake(listId, desc, time){
+		var listItem = "<div class=\"list-item\" data-lid=\""+ listId +"\">"+
 								"<div class=\"box-content\">"+
 					                "<input id=\""+listId+"\" type=\"checkbox\">"+
 					                "<label for=\""+listId+"\" class=\"check-btn\"></label>"+
@@ -133,12 +229,19 @@ $(document).ready(function(){
 				                "</div>"+
 				                "<div class=\"check-time\">"+ dateFormat(time) +"</div>"+
 				            "</div>";
-     	listContent.append($(listHtml).fadeIn(500));
+     	listContent.append($(listItem).fadeIn(500));
+	}
+
+	function historyItemMake(listId, desc, time){
+		var historyItem = "<div class=\"history-item\" data-lid=\""+ listId +"\">"+
+					            "<div class=\"history-text\">"+ desc +"</div>"+
+				                "<div class=\"history-time\">"+ dateFormat(time) +"</div>"+
+				            "</div>";
+		historyContent.append($(historyItem));
 	}
 
 	function getListData(key){
-		database.ref('users/' + uid + '/' + key).on('value',function(data){
-			console.log("asdsadsa");
+		commentsRef.child(key).once('value',function(data){
 			var listData = data.val();
 			$(".list-item[data-lid=\""+ data.key +"\"]").find(".check-text").html(listData.desc);
 		});
@@ -148,27 +251,27 @@ $(document).ready(function(){
 		commentsRef.push({
 			desc: description,
 			time: time,
-			status: status
+			complete: status
 		});
 	}
 
 	function updateListData(key, obj){
-		database.ref('users/' + uid + '/' + key).update(obj);
+		commentsRef.child(key).update(obj);
 	}
 
 	function removeListData(key){
-		database.ref('users/' + uid + '/' + key).remove();
+		commentsRef.child(key).remove();
 	}
 
 	//印出List數 & 選中數
-	function count(){
-		$(".list-count").html(listSum + " list");
-		$(".check-count").html("checked: " + checkSum);
-		if(listSum > 0){
-			listContent.removeClass("no-list");
-		}else{
-			listContent.addClass("no-list");
-		}
+	function count(history){
+		$(".listCount").html(listSum + " list");
+		$(".checkCount").html("checked: " + checkSum);
+		if(checkSum > 0){
+        	$(".clearBtn").show();
+        }else{
+        	$(".clearBtn").hide();
+        }
 	}
 
 	function dateFormat(milliseconds){

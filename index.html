@@ -7,34 +7,75 @@
 	<link rel="stylesheet" href="css/reset.css">
 	<link rel="stylesheet" href="css/todo.css">
 	<script src="https://ajax.googleapis.com/ajax/libs/jquery/1.12.2/jquery.min.js"></script>
-	<script src="https://www.gstatic.com/firebasejs/3.6.0/firebase.js"></script>
+	<script src="https://www.gstatic.com/firebasejs/3.6.1/firebase.js"></script>
 	<script src="js/todolist.js"></script>
 	
 </head>
 <body>
-	<div class="main">
-		<div class="container">
+	<div id="main">
+		<div class="header">
 			<div class="title">To Do List</div>
-			<!-- <input type="text" class="input-text" placeholder="What needs to be done?"> -->
-			<div class="input-text" contenteditable="true"></div>
+			<div class="logBtn">Login</div>
+			<div class="userContent">
+				<img class="userAvatar" src="" alt="">
+				<div class="userName"></div>
+			</div>
 		</div>
-		<div class="list-content no-list">
-			<!-- <div class="list-item">
-				<div class="box-content">
-					<input id="box" type="checkbox">
-	                <label for="box" class="check-btn"></label>
-	                <div class="check-text" contenteditable="true">Lorem ipsum dolor sit amet, consectetur adipisicing elit. Et aliquam consequatur</div>
-	                <div class='cancel-btn'></div>
-				</div>
-                <div class="check-time">2016/11/25 15:17:15</div>
-            </div> -->
+		
+		<div class="noListContent"></div>
+		<div class="tabItemContent">
+			<div class="tabItem active" data-tab="listContent">Lists</div>
+			<div class="tabItem" data-tab="historyContent">Completed</div>
+		</div>
+		<div class="tabContent">
+			<div class="listContent tab-content">
+				<div class="inputText" contenteditable="true"></div>
+				<!-- <div class="list-item">
+					<div class="box-content">
+						<input id="box" type="checkbox">
+		                <label for="box" class="check-btn"></label>
+		                <div class="check-text" contenteditable="true">Lorem ipsum dolor sit amet, consectetur adipisicing elit. Et aliquam consequatur</div>
+		                <div class='cancel-btn'></div>
+					</div>
+	                <div class="check-time">2016/11/25 15:17:15</div>
+	            </div> -->
+			</div>
+			<div class="historyContent tab-content" style="display:none">
+				<!-- <div class="history-item">
+		            <div class="history-text">Lorem ipsum dolor sit amet, consectetur adipisicing elit. Sapiente, tempora?</div>
+	                <div class="history-time">2016/11/25 15:17:15</div>
+	            </div> -->
+			</div>
 		</div>
 		<div class="footer">
-			<div class="list-count">0 list</div>
-			<div class="check-count">checked: 0</div>
-			<div class="clear-btn">Clear completed</div>
+			<div class="listCount"></div>
+			<div class="checkCount"></div>
+			<div class="clearBtn">Clear completed</div>
 		</div>
-
 	</div>
+	
+	<div id="loginContent" class="modal">
+		<div class="modal-content animate">
+			<div class="imgcontainer">
+				<div>Login</div>
+		    	<span class="close">&times;</span>
+		    </div>
+			<div class="container">
+				<div><b>Username</b></div>
+				<input type="email" placeholder="Enter Email" name="email" required>
+
+				<div><b>Password</b></div>
+	      		<input type="password" placeholder="Enter Password" name="psw" required>
+
+	      		<div class="loginBtn btn">Login</div>
+	      		<div class="commConent">
+	      			<div class="googleBtn btn">google</div>
+	      			<div class="facebookBtn btn">Facebook</div>
+	      		</div>
+			</div>
+				
+		</div>
+	</div>
+
 </body>
 </html>
