@@ -63,11 +63,27 @@
   	overflow-x: hidden;
   	overflow-y: auto;
   	line-height: 25px;
+    display: inline-block;
 }
 
 .inputText[contentEditable=true]:empty:before {
   content: "What needs to be done?";
   color: #bbb;
+}
+
+.uploadBtn{
+	width: 30px;
+    height: 30px;
+    cursor: pointer;
+    display: inline-block;
+    vertical-align: top;
+    padding: 0px 10px;
+    padding-top: 10px;
+    margin: 10px auto;
+    margin-left: 20px;
+    background: url(../img/folder.png);
+    background-repeat: no-repeat;
+    background-position: center;
 }
 
 .tabItemContent{

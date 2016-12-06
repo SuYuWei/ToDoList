@@ -3,12 +3,14 @@
 <head>
 	<meta charset="utf-8">
 	<meta http-equiv="X-UA-Compatible" content="IE=edge">
-	<title></title>
+	<title>ToDoList</title>
+	<link rel="icon" type="image/png" href="img/list.png" />
 	<link rel="stylesheet" href="css/reset.css">
 	<link rel="stylesheet" href="css/todo.css">
 	<script src="https://ajax.googleapis.com/ajax/libs/jquery/1.12.2/jquery.min.js"></script>
 	<script src="https://www.gstatic.com/firebasejs/3.6.1/firebase.js"></script>
 	<script src="js/todolist.js"></script>
+	<!-- <script src="js/main.js"></script> -->
 	
 </head>
 <body>
@@ -29,7 +31,11 @@
 		</div>
 		<div class="tabContent">
 			<div class="listContent tab-content">
-				<div class="inputText" contenteditable="true"></div>
+				<div style="width: 80%;margin: 0 auto;">
+					<div class="inputText" contenteditable="true"></div>
+					<div class="uploadBtn"></div>
+					<input class="fileUpload" type="file" style="display:none;">
+				</div>
 				<!-- <div class="list-item">
 					<div class="box-content">
 						<input id="box" type="checkbox">

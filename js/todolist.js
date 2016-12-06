@@ -3,9 +3,9 @@ $(document).ready(function(){
 	var listSum = 0,
 		checkSum = 0,
 		main = $("#main"),
+		loginContent = $("#loginContent"),
 		listContent = $(".listContent"),
 		historyContent = $(".historyContent"),
-		loginContent = $("#loginContent"),
 		checkedArr = [];
 
 	var	firebaseConfig = {
@@ -20,7 +20,7 @@ $(document).ready(function(){
 
 	var auth = firebase.auth(),
 		database = firebase.database(),	//初始化DB
-		commentsRef = database.ref(),
+		databaseRef = database.ref(),
 		storage = firebase.storage(),
 		storageRef = storage.ref();
 
@@ -40,15 +40,17 @@ $(document).ready(function(){
 	main.on("click",".login",function(){
 		loginContent.show();
 	});
+
 	main.on("click",".logout",function(){
 		logoutUI();
 		auth.signOut();
 	});
+
 	$(".close").on("click",function(){
 		loginContent.hide();
 	});
 
-	$(".loginBtn").click(function(){
+	loginContent.on("click",".loginBtn",function(){
 		var email = $("input[name=\"email\"]").val();
 		var password = $("input[name=\"psw\"]").val();
 		auth.signInWithEmailAndPassword(email,password).catch(function(e){
@@ -56,14 +58,22 @@ $(document).ready(function(){
 		});
 	});
 
-	$(".googleBtn").click(function(){
+	loginContent.on("click",".googleBtn",function(){
 		var provider = new firebase.auth.GoogleAuthProvider();
 		auth.signInWithPopup(provider);
 	});
 
-	$(".facebookBtn").click(function(){
+	loginContent.on("click",".facebookBtn",function(){
 		var provider = new firebase.auth.FacebookAuthProvider();
 		auth.signInWithPopup(provider);
+	});
+
+	$(".tabItem").click(function(){
+		var tabId = $(this).data("tab");
+		$(".tabItem").removeClass('active');
+		$(this).addClass('active');
+		$(".tab-content").hide();
+		$("."+tabId).show();
 	});
 
 	function logoutUI() {
@@ -72,7 +82,7 @@ $(document).ready(function(){
 		listContent.find(".inputText").hide();
 		listContent.find(".list-item").remove();
 		historyContent.find(".history-item").remove();
-		$(".noListContent").show();
+		main.find(".noListContent").show();
 		listSum = 0;
 		checkSum = 0;
 		count();
@@ -83,17 +93,17 @@ $(document).ready(function(){
 		main.find(".logBtn").addClass("logout").removeClass("login").text("logout");
 		listContent.find(".inputText").show();
 		loginContent.hide();
-		$(".noListContent").hide();
+		main.find(".noListContent").hide();
 	}
 
 	function loadlists(uid){
-		commentsRef = database.ref('users/' + uid + '/lists/');
-		commentsRef.off();
+		databaseRef = database.ref('users/' + uid + '/lists/');
+		databaseRef.off();
 
-		// commentsRef.on('value',function(data){
+		// databaseRef.on('value',function(data){
 		// });
 
-		commentsRef.on('child_added',function(data){
+		databaseRef.on('child_added',function(data){
 			var addList = data.val();
 			if(addList.complete){
 				historyItemMake(data.key, addList.desc, addList.time);
@@ -104,7 +114,7 @@ $(document).ready(function(){
 			count();
 		});
 
-		commentsRef.on('child_changed',function(data){
+		databaseRef.on('child_changed',function(data){
 			var updateList = data.val();
 			$(".list-item[data-lid=\""+ data.key +"\"]").find(".check-text").html(updateList.desc);
 			if(updateList.complete){
@@ -113,7 +123,7 @@ $(document).ready(function(){
 			}
 		});
 
-		commentsRef.on('child_removed',function(data){
+		databaseRef.on('child_removed',function(data){
 			$(".list-item[data-lid=\""+ data.key +"\"]").remove();
 		});
 
@@ -131,14 +141,6 @@ $(document).ready(function(){
 		// 	}
 		// });
 	}
-
-	$(".tabItem").click(function(){
-		var tabId = $(this).data("tab");
-		$(".tabItem").removeClass('active');
-		$(this).addClass('active');
-		$(".tab-content").hide();
-		$("."+tabId).show();
-	});
 
 	listContent.find(".inputText").on("keypress blur",function(e) {
 		var desc = $(this).html();
@@ -170,6 +172,33 @@ $(document).ready(function(){
 			getListData(listId);
 			return false;
 		}
+	});
+
+	$(".uploadBtn").off("click").click(function() {
+		$(".fileUpload").trigger('click');
+	});
+
+	$(".fileUpload").change(function() {
+		var fileOri = $(this);
+		var imageType = /image.*/;
+
+		$.each(fileOri[0].files, function (i, file){
+			var metadata = {
+				contentType: file.type
+			};
+			if (metadata.contentType.match(imageType)){
+				var reader = new FileReader();
+					reader.onload = function (e) {
+						var img = new Image(50,50);
+						img.src = reader.result;
+						$(".inputText").html(img);
+					}
+				reader.readAsDataURL(file);
+				// uploadFile(file,metadata);
+			}
+		});
+
+		fileOri.replaceWith(fileOri.val('').clone(true));
 	});
 
 	$(document).on("paste","div[contentEditable=true]",function(e){
@@ -241,14 +270,14 @@ $(document).ready(function(){
 	}
 
 	function getListData(key){
-		commentsRef.child(key).once('value',function(data){
+		databaseRef.child(key).once('value',function(data){
 			var listData = data.val();
 			$(".list-item[data-lid=\""+ data.key +"\"]").find(".check-text").html(listData.desc);
 		});
 	}
 
 	function addListData(description, time, status) {
-		commentsRef.push({
+		databaseRef.push({
 			desc: description,
 			time: time,
 			complete: status
@@ -256,11 +285,36 @@ $(document).ready(function(){
 	}
 
 	function updateListData(key, obj){
-		commentsRef.child(key).update(obj);
+		databaseRef.child(key).update(obj);
 	}
 
 	function removeListData(key){
-		commentsRef.child(key).remove();
+		databaseRef.child(key).remove();
+	}
+
+	function uploadFile(file, metadata){
+		var uploadTask = storageRef.child('images/' + file.name).put(file, metadata);
+		uploadTask.on("state_changed",
+
+			function progress(snapshot){
+				var progress = (snapshot.bytesTransferred / snapshot.totalBytes) * 100;
+				console.log(progress + "%");
+				// switch(snapshot.state){
+				// 	case "pause":
+				// 		break;
+				// 	case "runing":
+				// 		break;
+				// }
+			},
+
+			function error(error){
+				console.log(error.code);
+			},
+
+			function complete(){
+				var downloadURL = uploadTask.snapshot.downloadURL;
+			}
+		);
 	}
 
 	//印出List數 & 選中數
