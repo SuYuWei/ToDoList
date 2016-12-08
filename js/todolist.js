@@ -19,7 +19,7 @@ $(document).ready(function(){
 	firebase.initializeApp(firebaseConfig);
 
 	var auth = firebase.auth(),
-		database = firebase.database(),	//初始化DB
+		database = firebase.database(),
 		databaseRef = database.ref(),
 		storage = firebase.storage(),
 		storageRef = storage.ref();
@@ -42,8 +42,8 @@ $(document).ready(function(){
 	});
 
 	main.on("click",".logout",function(){
-		logoutUI();
 		auth.signOut();
+		logoutUI();
 	});
 
 	$(".close").on("click",function(){
@@ -106,9 +106,9 @@ $(document).ready(function(){
 		databaseRef.on('child_added',function(data){
 			var addList = data.val();
 			if(addList.complete){
-				historyItemMake(data.key, addList.desc, addList.time);
+				historyItemMake(data.key, addList.desc, addList.time, addList.url);
 			}else{
-				listItemMake(data.key, addList.desc, addList.time);
+				listItemMake(data.key, addList.desc, addList.time, addList.url);
 				listSum++;
 			}
 			count();
@@ -119,12 +119,13 @@ $(document).ready(function(){
 			$(".list-item[data-lid=\""+ data.key +"\"]").find(".check-text").html(updateList.desc);
 			if(updateList.complete){
 				$(".list-item[data-lid=\""+ data.key +"\"]").remove();
-				historyItemMake(data.key, updateList.desc, updateList.time);
+				historyItemMake(data.key, updateList.desc, updateList.time, updateList.url);
 			}
 		});
 
 		databaseRef.on('child_removed',function(data){
 			$(".list-item[data-lid=\""+ data.key +"\"]").remove();
+			$(".history-item[data-lid=\""+ data.key +"\"]").remove();
 		});
 
 		// var myConnectionsRef = firebase.database().ref('users/'+ uid +'/connections');
@@ -148,7 +149,7 @@ $(document).ready(function(){
 		if(e.keyCode == 13 && !e.shiftKey){
 			e.preventDefault();
 			if(desc == '')	return false;
-			addListData(desc, time, false);
+			addListData(desc, time, false, "");
 			$(this).html('').blur();
 		} else if(e.type == "blur" || e.type == "focusout"){
 			$(this).html('');
@@ -175,7 +176,7 @@ $(document).ready(function(){
 	});
 
 	$(".uploadBtn").off("click").click(function() {
-		$(".fileUpload").trigger('click');
+		$(".fileUpload").attr("accept", "image/*").trigger('click');
 	});
 
 	$(".fileUpload").change(function() {
@@ -187,14 +188,8 @@ $(document).ready(function(){
 				contentType: file.type
 			};
 			if (metadata.contentType.match(imageType)){
-				var reader = new FileReader();
-					reader.onload = function (e) {
-						var img = new Image(50,50);
-						img.src = reader.result;
-						$(".inputText").html(img);
-					}
-				reader.readAsDataURL(file);
-				// uploadFile(file,metadata);
+				
+				uploadFile(file,metadata);
 			}
 		});
 
@@ -248,24 +243,44 @@ $(document).ready(function(){
 		$(this).hide();
 	});
 
-	function listItemMake(listId, desc, time){
-		var listItem = "<div class=\"list-item\" data-lid=\""+ listId +"\">"+
+	function listItemMake(listId, desc, time ,url){
+		if(url){
+			var listItem = "<div class=\"list-item\" data-lid=\""+ listId +"\">"+
 								"<div class=\"box-content\">"+
 					                "<input id=\""+listId+"\" type=\"checkbox\">"+
 					                "<label for=\""+listId+"\" class=\"check-btn\"></label>"+
-					                "<div class=\"check-text\" contenteditable=\"true\">"+ desc +"</div>"+
+					                "<img class=\"check-img\" src='"+url+"'>"+
 					                "<div class=\"cancel-btn\"></div>"+
 				                "</div>"+
 				                "<div class=\"check-time\">"+ dateFormat(time) +"</div>"+
 				            "</div>";
+		}else{
+			var listItem = "<div class=\"list-item\" data-lid=\""+ listId +"\">"+
+									"<div class=\"box-content\">"+
+						                "<input id=\""+listId+"\" type=\"checkbox\">"+
+						                "<label for=\""+listId+"\" class=\"check-btn\"></label>"+
+						                "<div class=\"check-text\" contenteditable=\"true\">"+ desc +"</div>"+
+						                "<div class=\"cancel-btn\"></div>"+
+					                "</div>"+
+					                "<div class=\"check-time\">"+ dateFormat(time) +"</div>"+
+					            "</div>";
+		}
      	listContent.append($(listItem).fadeIn(500));
 	}
 
-	function historyItemMake(listId, desc, time){
-		var historyItem = "<div class=\"history-item\" data-lid=\""+ listId +"\">"+
-					            "<div class=\"history-text\">"+ desc +"</div>"+
+	function historyItemMake(listId, desc, time, url){
+		if(url){
+			var historyItem = "<div class=\"history-item\" data-lid=\""+ listId +"\">"+
+					            "<img class=\"history-img\" src='"+url+"'>"+
 				                "<div class=\"history-time\">"+ dateFormat(time) +"</div>"+
 				            "</div>";
+        }else{
+        	var historyItem = "<div class=\"history-item\" data-lid=\""+ listId +"\">"+
+	            "<div class=\"history-text\">"+ desc +"</div>"+
+                "<div class=\"history-time\">"+ dateFormat(time) +"</div>"+
+            "</div>";
+        }
+		
 		historyContent.append($(historyItem));
 	}
 
@@ -276,11 +291,12 @@ $(document).ready(function(){
 		});
 	}
 
-	function addListData(description, time, status) {
+	function addListData(description, time, status, url) {
 		databaseRef.push({
 			desc: description,
 			time: time,
-			complete: status
+			complete: status,
+			url: url
 		});
 	}
 
@@ -313,6 +329,7 @@ $(document).ready(function(){
 
 			function complete(){
 				var downloadURL = uploadTask.snapshot.downloadURL;
+				addListData("", new Date().getTime(), false, downloadURL);
 			}
 		);
 	}

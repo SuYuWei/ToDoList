@@ -196,10 +196,25 @@
 	line-height: 25px;
 }
 
+.list-item .check-img{
+	width: 150px;
+	/*height: 100px;*/
+	float: left;
+	display: inline-block;
+	margin-top: 15px;
+	margin-left: 50px;
+}
+
 .history-text{
 	margin-top: 15px;
     padding: 3px 5px;
     line-height: 25px;
+}
+
+.history-img{
+	width: 150px;
+	/*height: 100px;*/
+	padding: 3px 5px;
 }
 
 .list-item .cancel-btn{
